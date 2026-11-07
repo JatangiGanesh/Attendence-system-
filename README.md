@@ -1,159 +1,133 @@
-# Praxon Technologies — AI-Based Face Recognition Attendance and Employee Management System
+# 🕉️ Vinayaka Chavithi 9 Days Annadanam Information and Location Finder
+### *అన్నదాత సుఖీభవ (Annadata Sukhibhava) — Service to humanity is service to Lord Vinayaka*
 
-A Flask web application designed for **Praxon Technologies** to automate employee attendance using deep face recognition, track entry/exit logs, manage monthly leaves, and calculate monthly attendance by excluding Sundays and company holidays from regular working days.
-
----
-
-## 🌟 Key Features
-
-1. **AI Face Recognition Kiosk**: Real-time camera access via browser (`getUserMedia`), deep face detection (**YuNet**) and 128-dimensional facial feature representation (**SFace**) with cosine similarity matching.
-2. **Contactless Login & Logout**: Automated attendance recording with entry and exit timestamps, duplicate-entry prevention, and accurate working duration calculation.
-3. **Biometric Security & Privacy**: Sensitive facial embeddings are saved outside public static assets in `data/face_data/` with restricted references.
-4. **Monthly Attendance Engine (Praxon Formula)**:
-   - Dynamic calculation excluding all Sundays in the selected month.
-   - Deduction of registered non-Sunday company holidays.
-   - $$\text{Regular Working Days} = \text{Calendar Days} - \text{Sundays} - \text{Company Holidays}$$
-   - $$\text{Absent Days} = \text{Regular Working Days} - \text{Present Days} - \text{Approved Leave Days}$$
-   - Handles mid-month joining dates.
-5. **Leave & Holiday Management**: Leave application submission, review/approval workflow, and configurable company holidays calendar.
-6. **Executive Reporting**: One-click export of monthly attendance statements to **Microsoft Excel (.xlsx)** via `OpenPyXL` and **PDF** via `ReportLab`.
-7. **Database Compatibility**: Primary support for **MySQL** (`PyMySQL`) with transparent fallback to **SQLite** for rapid local deployment without database server configuration.
+A full-stack web application designed to connect generous food donors, temple trusts, and Ganesh Utsav Samithis with devotees and people seeking Mahaprasadam during the auspicious nine days of Vinayaka Chavithi celebrations.
 
 ---
 
-## 📁 Project Structure
+## 🌟 Key Highlights & Features
+
+### 🍛 For Donors, Mandapams & Organizations:
+- **Easy Event Registration**: Donors can register and publish Annadanam events with:
+  - Donor / Organization name
+  - Contact number & WhatsApp number
+  - Food menu details (e.g. Sambar Rice, Tamarind Pulihara, Bellam Pongali, Laddu)
+  - Estimated available quantity (e.g., 500 plates, 2,000 devotees)
+  - Festival Day (Day 1: Chavithi through Day 9: Navami / Maha Prasadam)
+  - Distribution timings (e.g. 12:30 PM - 3:30 PM, 7:00 PM - 9:30 PM)
+  - State, District, Mandal/Village, complete street address & landmark
+  - Google Maps location link with one-click **GPS Geolocation detection**
+- **Donor Dashboard**: Donors can log in to update live operational status in real time (`Available`, `Serving Now` with green pulsing radar, `Food Exhausted`, `Completed`).
+
+### 🗺️ For Devotees & Visitors:
+- **Interactive Leaflet / OpenStreetMap Visualizer**: View all food distribution points with custom festive pins. Clicking any pin shows the pandal name, menu, and a **"Get Directions"** button.
+- **Instant Search & Multi-Filters**: Filter events by:
+  - District / City (e.g. Hyderabad, Visakhapatnam, Vijayawada, Guntur, Warangal, Tirupati)
+  - Village, Mandal or Landmark keyword
+  - Festival Day (Day 1 through Day 9)
+  - Food Category (Full Meals Prasadam, Pulihara & Pongali, Tiffin, Sweets)
+  - Real-time status (Serving Now, Available)
+- **1-Click Google Maps Navigation**: Direct button to launch Google Maps turn-by-turn directions to reach the food counter.
+- **Direct Contact & WhatsApp Sharing**: Instant "Call Donor", "WhatsApp Organizer", and "Share Location" buttons.
+
+### 🛡️ For Administrators:
+- **Admin Moderation Dashboard**: Accessible at `/admin/login` (Default demo credentials: `admin` / `admin123`).
+- Review, verify, feature, or delete donor submissions.
+- Real-time analytics of active centers, verified locations, and total devotee reach.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| **Frontend** | HTML5, CSS3, JavaScript (ES6+), Bootstrap 5.3.2, FontAwesome 6, Leaflet.js |
+| **Backend** | Python Flask, Jinja2 templating, Werkzeug Security |
+| **Database** | SQLite (Default out-of-the-box) / MySQL (Fully supported via SQLAlchemy & PyMySQL) |
+
+---
+
+## 📁 Project Directory Structure
 
 ```
-praxon_attendance/
-├── app.py                     # Flask application factory, routes registration & CLI
-├── config.py                  # Core configuration, database URIs, paths, & thresholds
-├── database.py                # SQLAlchemy models: Admin, Employee, Attendance, Leave, Holiday
-├── init_db.py                 # Database initialization & demo seeding script
-├── schema.sql                 # MySQL schema DDL definition
-├── requirements.txt           # Python dependency specifications
-│
-├── models/
-│   ├── face_model.py          # OpenCV YuNet & SFace deep face recognition engine
-│   └── weights/               # Preloaded ONNX weights (YuNet & SFace)
-│
-├── routes/
-│   ├── admin_routes.py        # Authentication & executive dashboard
-│   ├── employee_routes.py     # Employee directory & biometric face enrollment
-│   ├── attendance_routes.py   # Kiosk terminal, daily logs, & monthly calculations
-│   ├── leave_routes.py        # Leaves management & company holidays calendar
-│   └── report_routes.py       # Excel (.xlsx) and PDF (.pdf) export endpoints
-│
-├── services/
-│   ├── face_service.py        # Biometric encoding, liveness, & matching
-│   ├── attendance_service.py  # Login/logout logic, Sunday exclusion, & monthly calculations
-│   └── report_service.py      # OpenPyXL and ReportLab document generators
-│
-├── templates/                 # Responsive Bootstrap 5 HTML templates
-│   ├── base.html
-│   ├── login.html
-│   ├── dashboard.html
-│   ├── employees.html
-│   ├── add_employee.html
-│   ├── face_registration.html
-│   ├── attendance.html        # Live scanner terminal kiosk
-│   ├── daily_attendance.html
-│   ├── monthly_attendance.html
-│   ├── leaves.html
-│   ├── holidays.html
-│   └── reports.html
-│
-├── static/
-│   ├── css/style.css          # Praxon corporate styles & camera overlays
-│   └── js/camera.js           # MediaDevices webcam streaming & biometric capture
-│
-├── instance/
-│   └── config.py              # Optional local credential overrides
-│
-├── data/
-│   └── face_data/             # Secure biometric vector storage (strictly non-public)
-│
-└── exports/                   # Generated Excel and PDF monthly statements
+annadanam-finder/
+├── app.py                  # Main Flask application & routes (Public, Donor, Admin, API)
+├── models.py               # SQLAlchemy database models (Donor, AnnadanamEvent, AdminUser)
+├── config.py               # App configuration & MySQL / SQLite connection strings
+├── seed_data.py            # Pre-populates 9 days of realistic Annadanam events & donors
+├── test_app.py             # Route verification and health test suite
+├── requirements.txt        # Python package dependencies
+├── annadanam.db            # SQLite database file (created automatically)
+├── templates/
+│   ├── base.html           # Base layout with festive theme, navbar, flashes, footer
+│   ├── index.html          # Homepage (Hero, 9-Day pills, Search bar, Leaflet map, Featured cards)
+│   ├── events.html         # Full directory search with multi-filters
+│   ├── event_detail.html   # Detailed event view with directions, phone, WhatsApp share
+│   ├── submit_annadanam.html # Donor event registration form with GPS detection
+│   ├── donor_register.html # Donor account creation
+│   ├── donor_login.html    # Donor sign in
+│   ├── donor_dashboard.html# Donor control panel to update live food status
+│   ├── about.html          # Significance of 9 Days Navaratri & Annadanam guidelines
+│   └── admin/
+│       ├── login.html      # Admin login page
+│       └── dashboard.html  # Moderation dashboard (verify, feature, delete)
+└── static/
+    ├── css/
+    │   └── style.css       # Custom festive saffron & gold styles, animations, card styles
+    └── js/
+        ├── main.js         # GPS auto-detect, share handler, tooltips
+        └── map.js          # Leaflet map pins, bounds auto-fit, and popups
 ```
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### 1. Environment Setup (Anaconda)
-Open Anaconda Prompt and activate the environment:
-```bash
-conda activate praxon
-# or use your existing environment with Python 3.11+:
-# conda activate 2602
+### 1. Navigate to the project folder
+```powershell
+cd "C:\Users\Jatangi Ganesh\.gemini\antigravity\scratch\annadanam-finder"
 ```
 
-Install requirements:
-```bash
-pip install -r requirements.txt
+### 2. Install dependencies (if in a fresh environment)
+```powershell
+python -m pip install -r requirements.txt
 ```
 
-### 2. Database Configuration
-
-#### Option A: MySQL (Production / Standard)
-1. Ensure your MySQL server is running (e.g., via XAMPP, WampServer, or native MySQL Service on port `3306`).
-2. Run the SQL schema or create the database:
-   ```sql
-   CREATE DATABASE praxon_attendance;
-   ```
-3. Set your credentials in `.env` or `instance/config.py`:
-   ```ini
-   MYSQL_HOST=localhost
-   MYSQL_PORT=3306
-   MYSQL_USER=root
-   MYSQL_PASSWORD=your_password
-   MYSQL_DB=praxon_attendance
-   ```
-
-#### Option B: SQLite (Zero Configuration)
-If MySQL is not currently running, the application automatically falls back to local SQLite (`praxon_attendance.db`). You can also force SQLite by setting:
-```ini
-USE_SQLITE=true
+### 3. Initialize & Seed Sample Data
+```powershell
+python seed_data.py
 ```
+*(Pre-configures default admin `admin / admin123` and 8 events across Day 1 to Day 9 in Hyderabad, Vizag, Vijayawada, Warangal, Tirupati, Guntur)*
 
-### 3. Initialize & Seed Demo Data
-Run the seeding script to create database tables, register default admin credentials, add sample employees, holidays, and benchmark October 2026 attendance data:
-```bash
-python init_db.py
-```
-
-### 4. Run the Web Application
-```bash
+### 4. Run the Web Server
+```powershell
 python app.py
 ```
-Open your browser and navigate to:
-- **Admin Dashboard**: `http://127.0.0.1:5000/login`
+Open your browser and visit: **`http://localhost:5000`**
+
+---
+
+## 🗄️ Optional: Connecting to MySQL
+
+To switch from SQLite to MySQL:
+1. Create a database in MySQL:
+   ```sql
+   CREATE DATABASE annadanam_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+2. Set the `DATABASE_URL` environment variable before running `app.py`:
+   ```powershell
+   $env:DATABASE_URL="mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/annadanam_db"
+   python seed_data.py
+   python app.py
+   ```
+
+---
+
+## 🔑 Default Credentials
+
+- **Admin Portal**: [http://localhost:5000/admin/login](http://localhost:5000/admin/login)
   - **Username**: `admin`
   - **Password**: `admin123`
-- **Attendance Kiosk Terminal**: `http://127.0.0.1:5000/attendance`
-
----
-
-## 👤 Attendance Scanning Workflow
-
-1. Open `http://127.0.0.1:5000/attendance` on any device equipped with a camera.
-2. Grant camera access when prompted by the browser.
-3. Stand in front of the camera with your face aligned within the oval guide.
-4. Click **RECORD LOGIN** at the start of your shift:
-   - The system captures the frame, identifies the employee via Deep SFace cosine similarity, verifies that no login has been recorded yet for the day, and marks the employee as Present.
-5. Click **RECORD LOGOUT** at the end of your shift:
-   - The system identifies the employee, calculates the net working hours ($$T_{\text{logout}} - T_{\text{login}}$$), and updates the record with the shift status (e.g. Present or Half Day).
-
----
-
-## 📊 Monthly Attendance Calculation Example
-
-For October 2026:
-- **Total Calendar Days**: 31
-- **Sundays Excluded**: 4 (Oct 4, 11, 18, 25)
-- **Company Holidays**: 1 (Gandhi Jayanti, Oct 2)
-- **Regular Working Days**: $31 - 4 - 1 = 26$ (or 27 if 0 additional holidays)
-- **Present Days**: 23
-- **Approved Leaves**: 2
-- **Absent Days**: $26 - 23 - 2 = 1$ absent day
-
-Reports can be exported instantly to `.xlsx` or `.pdf` from the **Reports** or **Monthly Calculation** menus.
+- **Sample Donor Account**: [http://localhost:5000/donor/login](http://localhost:5000/donor/login)
+  - **Mobile**: `9848022334`
+  - **Password**: `donor123`
